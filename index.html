@@ -8,7 +8,6 @@
     let num = (params.get('num') || '').trim();
     if (!num) { document.body.innerText = 'מספר חסר'; return; }
     num = num.replace(/[^0-9+]/g, '');
-    if (!num.startsWith('+')) { num = '+' + num; }
     location.href = 'tel:' + num;
   })();
 </script>
