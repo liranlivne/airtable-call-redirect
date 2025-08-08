@@ -1,15 +1,27 @@
-<!doctype html>
-<html lang="he">
-<meta charset="utf-8">
-<title>Call Redirect</title>
 <script>
-  (function () {
-    const params = new URLSearchParams(location.search);
-    let num = (params.get('num') || '').trim();
-    if (!num) { document.body.innerText = 'מספר חסר'; return; }
-    num = num.replace(/[^0-9+]/g, '');
-    location.href = 'tel:' + num;
-  })();
+(function () {
+  const p = new URLSearchParams(location.search);
+  let num = (p.get('num') || '').replace(/[^0-9]/g,'');
+  if (!num) { document.body.innerText = 'מספר חסר'; return; }
+  const href = 'tel:' + num;
+
+  // מפעיל חיוג
+  location.href = href;
+
+  // מנסה לסגור את הטאב/לנקות אותו אחרי המסירה לחייגן
+  function tryClose() {
+    // מנסה לסגור: יעבוד רק אם הדף נפתח בעקבות לחיצה ישירה
+    window.open('', '_self');
+    window.close();
+    // אם חסום, לפחות להישאר ללא היסטוריה ולבן
+    setTimeout(() => location.replace('about:blank'), 200);
+  }
+
+  // כשמאבדים פוקוס/נעלם (חייגן נפתח) – נסה לסגור
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) setTimeout(tryClose, 400);
+  });
+  window.addEventListener('pagehide', () => setTimeout(tryClose, 200));
+  setTimeout(tryClose, 1200); // fallback אחרון
+})();
 </script>
-<body>מתקשר…</body>
-</html>
